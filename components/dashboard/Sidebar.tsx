@@ -101,7 +101,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 key={item.href}
                                 href={item.href}
                                 className={`nav-item ${isActive ? 'active' : ''}`}
-                                onClick={onClose}
+                                onClick={() => {
+                                    if (window.innerWidth <= 1024) onClose();
+                                }}
                             >
                                 <Icon className="icon" />
                                 <span>{item.label}</span>

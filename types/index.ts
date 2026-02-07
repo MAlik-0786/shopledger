@@ -220,11 +220,15 @@ export interface DashboardStats {
     totalRevenue: number;
     todaySales: number;
     lowStockCount: number;
+    totalTax: number;
+    totalRevenueWithoutTax: number;
 }
 
 export interface RevenueData {
     date: string;
     revenue: number;
+    subtotal: number;
+    tax: number;
     orders: number;
 }
 

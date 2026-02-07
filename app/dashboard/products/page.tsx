@@ -42,6 +42,11 @@ export default function ProductsPage() {
         unit: 'pcs',
     });
 
+    // Category Modal state
+    const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+    const [newCategory, setNewCategory] = useState({ name: '', description: '' });
+    const [categoryLoading, setCategoryLoading] = useState(false);
+
     const fetchProducts = useCallback(async () => {
         try {
             const params = new URLSearchParams();
@@ -61,8 +66,10 @@ export default function ProductsPage() {
 
     const fetchCategories = async () => {
         try {
+            console.log('Fetching categories...');
             const res = await fetch('/api/categories');
             const data = await res.json();
+            console.log('Categories response:', data);
             if (data.success) {
                 setCategories(data.data);
             }
@@ -71,18 +78,48 @@ export default function ProductsPage() {
         }
     };
 
-    useEffect(() => {
-        Promise.all([fetchProducts(), fetchCategories()]).finally(() => setLoading(false));
-    }, [fetchProducts]);
-
-    useEffect(() => {
-        if (!loading) {
-            const debounce = setTimeout(() => {
-                fetchProducts();
-            }, 300);
-            return () => clearTimeout(debounce);
+    const handleAddCategory = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setCategoryLoading(true);
+        try {
+            const res = await fetch('/api/categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newCategory),
+            });
+            const data = await res.json();
+            if (data.success) {
+                setCategories([...categories, data.data]);
+                setFormData(prev => ({ ...prev, categoryId: data.data.id }));
+                setIsCategoryModalOpen(false);
+                setNewCategory({ name: '', description: '' });
+            } else {
+                alert(data.error || 'Failed to add category');
+            }
+        } catch (error) {
+            console.error('Error adding category:', error);
+            alert('Failed to add category');
+        } finally {
+            setCategoryLoading(false);
         }
-    }, [search, selectedCategory, showLowStock, loading, fetchProducts]);
+    };
+
+    // Initial load
+    useEffect(() => {
+        fetchCategories();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Filter changes effect
+    useEffect(() => {
+        const debounce = setTimeout(() => {
+            setLoading(true);
+            fetchProducts().finally(() => setLoading(false));
+        }, 300);
+
+        return () => clearTimeout(debounce);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [search, selectedCategory, showLowStock]);
 
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -446,17 +483,28 @@ export default function ProductsPage() {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                         <div className="form-group">
                             <label className="form-label">Category</label>
-                            <select
-                                name="categoryId"
-                                className="form-select"
-                                value={formData.categoryId}
-                                onChange={handleFormChange}
-                            >
-                                <option value="">Select Category</option>
-                                {categories.map((cat) => (
-                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                                ))}
-                            </select>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <select
+                                    name="categoryId"
+                                    className="form-select"
+                                    value={formData.categoryId}
+                                    onChange={handleFormChange}
+                                >
+                                    <option value="">Select Category</option>
+                                    {categories.map((cat) => (
+                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                    ))}
+                                </select>
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    onClick={() => setIsCategoryModalOpen(true)}
+                                    title="Add New Category"
+                                    style={{ padding: '0.75rem' }}
+                                >
+                                    <Plus size={20} />
+                                </Button>
+                            </div>
                         </div>
                         <div className="form-group">
                             <label className="form-label">Unit</label>
@@ -566,17 +614,28 @@ export default function ProductsPage() {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                         <div className="form-group">
                             <label className="form-label">Category</label>
-                            <select
-                                name="categoryId"
-                                className="form-select"
-                                value={formData.categoryId}
-                                onChange={handleFormChange}
-                            >
-                                <option value="">Select Category</option>
-                                {categories.map((cat) => (
-                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                                ))}
-                            </select>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <select
+                                    name="categoryId"
+                                    className="form-select"
+                                    value={formData.categoryId}
+                                    onChange={handleFormChange}
+                                >
+                                    <option value="">Select Category</option>
+                                    {categories.map((cat) => (
+                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                    ))}
+                                </select>
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    onClick={() => setIsCategoryModalOpen(true)}
+                                    title="Add New Category"
+                                    style={{ padding: '0.75rem' }}
+                                >
+                                    <Plus size={20} />
+                                </Button>
+                            </div>
                         </div>
                         <div className="form-group">
                             <label className="form-label">Unit</label>
@@ -680,6 +739,41 @@ export default function ProductsPage() {
                         </p>
                     </div>
                 )}
+            </Modal>
+
+            {/* Add Category Modal */}
+            <Modal
+                isOpen={isCategoryModalOpen}
+                onClose={() => setIsCategoryModalOpen(false)}
+                title="Add New Category"
+                size="md"
+                footer={
+                    <>
+                        <Button variant="secondary" onClick={() => setIsCategoryModalOpen(false)}>Cancel</Button>
+                        <Button variant="primary" onClick={handleAddCategory} isLoading={categoryLoading}>Add Category</Button>
+                    </>
+                }
+            >
+                <form onSubmit={handleAddCategory}>
+                    <Input
+                        label="Category Name *"
+                        value={newCategory.name}
+                        onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
+                        placeholder="Enter category name"
+                        required
+                    />
+                    <div className="form-group">
+                        <label className="form-label">Description</label>
+                        <textarea
+                            className="form-input"
+                            rows={3}
+                            value={newCategory.description}
+                            onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
+                            placeholder="Enter category description"
+                            style={{ resize: 'vertical' }}
+                        />
+                    </div>
+                </form>
             </Modal>
         </div>
     );

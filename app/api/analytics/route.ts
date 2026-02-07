@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Types } from 'mongoose';
 import dbConnect from '@/lib/db';
 import Invoice from '@/models/Invoice';
 import Product from '@/models/Product';
@@ -18,6 +19,8 @@ export async function GET(request: NextRequest) {
         await dbConnect();
 
         const merchantId = user.role === 'merchant' ? user.id : user.merchantId;
+        const merchantObjectId = new Types.ObjectId(merchantId);
+
         const { searchParams } = new URL(request.url);
         const type = searchParams.get('type') || 'dashboard';
         const days = parseInt(searchParams.get('days') || '30');
@@ -37,16 +40,23 @@ export async function GET(request: NextRequest) {
                 totalInvoices,
                 todayInvoices,
             ] = await Promise.all([
-                // Total revenue all time
+                // Financials
                 Invoice.aggregate([
-                    { $match: { merchantId: { $eq: merchantId } } },
-                    { $group: { _id: null, total: { $sum: '$grandTotal' } } },
+                    { $match: { merchantId: { $eq: merchantObjectId } } },
+                    {
+                        $group: {
+                            _id: null,
+                            totalRevenue: { $sum: '$grandTotal' },
+                            totalTax: { $sum: '$taxAmount' },
+                            totalSubtotal: { $sum: '$subtotal' }
+                        }
+                    },
                 ]),
                 // Today's sales
                 Invoice.aggregate([
                     {
                         $match: {
-                            merchantId: { $eq: merchantId },
+                            merchantId: { $eq: merchantObjectId },
                             createdAt: { $gte: startOfToday },
                         },
                     },
@@ -70,7 +80,9 @@ export async function GET(request: NextRequest) {
             ]);
 
             const stats: DashboardStats = {
-                totalRevenue: totalRevenue[0]?.total || 0,
+                totalRevenue: totalRevenue[0]?.totalRevenue || 0,
+                totalTax: totalRevenue[0]?.totalTax || 0,
+                totalRevenueWithoutTax: totalRevenue[0]?.totalSubtotal || 0,
                 todaySales: todaySales[0]?.total || 0,
                 totalProducts,
                 lowStockCount,
@@ -88,7 +100,7 @@ export async function GET(request: NextRequest) {
             const revenueData = await Invoice.aggregate([
                 {
                     $match: {
-                        merchantId: { $eq: merchantId },
+                        merchantId: { $eq: merchantObjectId },
                         createdAt: { $gte: startOfPeriod },
                     },
                 },
@@ -98,6 +110,8 @@ export async function GET(request: NextRequest) {
                             $dateToString: { format: '%Y-%m-%d', date: '$createdAt' },
                         },
                         revenue: { $sum: '$grandTotal' },
+                        subtotal: { $sum: '$subtotal' }, // Assuming subtotal field exists
+                        tax: { $sum: '$taxAmount' },     // Assuming taxAmount field exists
                         orders: { $sum: 1 },
                     },
                 },
@@ -107,6 +121,8 @@ export async function GET(request: NextRequest) {
             const formattedData: RevenueData[] = revenueData.map((item) => ({
                 date: item._id,
                 revenue: item.revenue,
+                subtotal: item.subtotal,
+                tax: item.tax,
                 orders: item.orders,
             }));
 
@@ -120,7 +136,7 @@ export async function GET(request: NextRequest) {
             const topProducts = await Invoice.aggregate([
                 {
                     $match: {
-                        merchantId: { $eq: merchantId },
+                        merchantId: { $eq: merchantObjectId },
                         createdAt: { $gte: startOfPeriod },
                     },
                 },
@@ -154,7 +170,7 @@ export async function GET(request: NextRequest) {
             const categorySales = await Invoice.aggregate([
                 {
                     $match: {
-                        merchantId: { $eq: merchantId },
+                        merchantId: { $eq: merchantObjectId },
                         createdAt: { $gte: startOfPeriod },
                     },
                 },

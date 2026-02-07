@@ -7,6 +7,7 @@ import {
     ShoppingCart,
     Package,
     Calendar,
+    FileText,
 } from 'lucide-react';
 import { StatCard, Loader } from '@/components/ui';
 import {
@@ -72,6 +73,8 @@ export default function AnalyticsPage() {
     };
 
     const totalRevenue = revenueData.reduce((sum, d) => sum + d.revenue, 0);
+    const totalSubtotal = revenueData.reduce((sum, d) => sum + (d.subtotal || 0), 0);
+    const totalTax = revenueData.reduce((sum, d) => sum + (d.tax || 0), 0);
     const totalOrders = revenueData.reduce((sum, d) => sum + d.orders, 0);
     const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
     const totalProductsSold = topProducts.reduce((sum, p) => sum + p.totalSold, 0);
@@ -109,12 +112,24 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Summary Stats */}
-            <div className="grid-stats" style={{ marginBottom: '2rem' }}>
+            <div className="grid-stats" style={{ marginBottom: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
                 <StatCard
-                    title="Total Revenue"
+                    title="Total Revenue (w/ GST)"
                     value={formatCurrency(totalRevenue)}
                     icon={TrendingUp}
                     color="primary"
+                />
+                <StatCard
+                    title="Net Revenue (w/o GST)"
+                    value={formatCurrency(totalSubtotal)}
+                    icon={TrendingUp}
+                    color="info"
+                />
+                <StatCard
+                    title="Total GST"
+                    value={formatCurrency(totalTax)}
+                    icon={FileText} // Or another icon like Landmark or Receipt
+                    color="warning"
                 />
                 <StatCard
                     title="Total Orders"
@@ -132,7 +147,7 @@ export default function AnalyticsPage() {
                     title="Products Sold"
                     value={totalProductsSold}
                     icon={Package}
-                    color="warning"
+                    color="primary"
                 />
             </div>
 

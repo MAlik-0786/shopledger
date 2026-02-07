@@ -24,7 +24,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
         <header className="header">
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <button
-                    className="btn btn-ghost btn-icon lg:hidden"
+                    className="btn btn-ghost btn-icon"
                     onClick={onMenuClick}
                     style={{ display: 'flex' }}
                 >

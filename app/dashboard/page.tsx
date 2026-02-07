@@ -78,13 +78,25 @@ export default function DashboardPage() {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid-stats" style={{ marginBottom: '2rem' }}>
+            <div className="grid-stats" style={{ marginBottom: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
                 <StatCard
-                    title="Total Revenue"
+                    title="Total Revenue (w/ GST)"
                     value={formatCurrency(stats?.totalRevenue || 0)}
                     icon={TrendingUp}
                     color="primary"
                     trend={{ value: 12.5, isPositive: true }}
+                />
+                <StatCard
+                    title="Net Revenue (w/o GST)"
+                    value={formatCurrency(stats?.totalRevenueWithoutTax || 0)}
+                    icon={TrendingUp}
+                    color="info"
+                />
+                <StatCard
+                    title="Total GST"
+                    value={formatCurrency(stats?.totalTax || 0)}
+                    icon={FileText}
+                    color="warning"
                 />
                 <StatCard
                     title="Today's Sales"

@@ -392,14 +392,18 @@ a:hover {
 
 /* Table */
 .table-container {
+  width: 100%;
   overflow-x: auto;
   border-radius: var(--radius-xl);
   background: var(--bg-primary);
   box-shadow: var(--shadow-md);
+  -webkit-overflow-scrolling: touch;
 }
 
 .table {
   width: 100%;
+  min-width: 800px;
+  /* Ensure table doesn't collapse too much */
   border-collapse: collapse;
 }
 
@@ -413,6 +417,7 @@ a:hover {
   color: var(--text-secondary);
   background: var(--bg-tertiary);
   border-bottom: 1px solid var(--color-gray-200);
+  white-space: nowrap;
 }
 
 .table td {
@@ -420,6 +425,7 @@ a:hover {
   font-size: 0.875rem;
   color: var(--text-primary);
   border-bottom: 1px solid var(--color-gray-100);
+  white-space: nowrap;
 }
 
 .table tr:last-child td {
@@ -493,6 +499,12 @@ a:hover {
   overflow-y: auto;
   z-index: 40;
   transition: transform var(--transition-slow);
+  transform: translateX(-100%);
+  /* Default hidden */
+}
+
+.sidebar.open {
+  transform: translateX(0);
 }
 
 .sidebar-header {
@@ -543,9 +555,14 @@ a:hover {
 
 /* Main Content */
 .main-content {
-  margin-left: 260px;
+  margin-left: 0;
   min-height: 100vh;
   background: var(--bg-secondary);
+  transition: margin-left var(--transition-slow);
+}
+
+.main-content.shifted {
+  margin-left: 260px;
 }
 
 /* Header */
@@ -786,16 +803,9 @@ a:hover {
 }
 
 @media (max-width: 1024px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .main-content {
+  .main-content.shifted {
     margin-left: 0;
+    /* No shift on mobile, overlay instead */
   }
 
   .grid-2,
