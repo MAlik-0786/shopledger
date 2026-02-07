@@ -1,7 +1,7 @@
 {
-  "name": "StockFlow - Smart Inventory & POS",
-  "short_name": "StockFlow",
-  "description": "Stock management and billing system for retail shops.",
+  "name": "ShopLedger - Smart Inventory & POS",
+  "short_name": "ShopLedger",
+  "description": "Smart inventory management and billing system for retail shops.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

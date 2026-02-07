@@ -9,24 +9,24 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "StockFlow - Smart Inventory & POS Billing System",
-  description: "Boost your retail efficiency with StockFlow. Real-time stock tracking, quick QR billing, and powerful sales analytics for modern merchants.",
+  title: "ShopLedger - Smart Inventory & POS Billing System",
+  description: "Boost your retail efficiency with ShopLedger. Real-time stock tracking, quick QR billing, and powerful sales analytics for modern merchants.",
   keywords: ["inventory management system", "POS software", "retail billing software", "stock tracking", "QR code billing", "sales analytics"],
-  authors: [{ name: "StockFlow Team" }],
+  authors: [{ name: "ShopLedger Team" }],
   viewport: "width=device-width, initial-scale=1, maximum-scale=1",
   themeColor: "#6366f1",
   manifest: "/manifest.json",
   openGraph: {
-    title: "StockFlow - Smart Inventory & POS Billing System",
+    title: "ShopLedger - Smart Inventory & POS Billing System",
     description: "The complete stock management and billing solution for retail shops.",
-    url: "https://stockflow.demo",
-    siteName: "StockFlow",
+    url: "https://shopledger.demo",
+    siteName: "ShopLedger",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "StockFlow Dashboard Preview",
+        alt: "ShopLedger Dashboard Preview",
       },
     ],
     locale: "en_IN",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "StockFlow - Smart Inventory & POS Billing System",
+    title: "ShopLedger - Smart Inventory & POS Billing System",
     description: "The complete stock management and billing solution for retail shops.",
     images: ["/og-image.png"],
   },

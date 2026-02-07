@@ -72,7 +72,7 @@ export default function HomePage() {
         <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'white', fontSize: '1.5rem', fontWeight: 700 }}>
             <Store size={32} />
-            <span>StockFlow</span>
+            <span>ShopLedger</span>
           </div>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <Link href="/login">
@@ -138,7 +138,7 @@ export default function HomePage() {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}>
-                StockFlow
+                ShopLedger
               </span>
             </h1>
 
@@ -149,14 +149,13 @@ export default function HomePage() {
               margin: '0 auto 2.5rem',
               lineHeight: 1.6,
             }}>
-              The complete stock management and billing solution for retail shops.
-              Track products, create invoices, and grow your business effortlessly.
+              The ultimate solution for retail shops to manage inventory, sales, and staff in one place.
             </p>
 
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link href="/register">
                 <Button variant="primary" size="lg" rightIcon={<ArrowRight size={20} />}>
-                  Start Free Trial
+                  Start Your ShopLedger
                 </Button>
               </Link>
               <Button
@@ -249,7 +248,7 @@ export default function HomePage() {
                   Built for Modern Retail
                 </h2>
                 <p style={{ color: '#94a3b8', marginBottom: '2rem', lineHeight: 1.7 }}>
-                  StockFlow is designed with real retail challenges in mind. From inventory tracking to billing,
+                  ShopLedger is designed with real retail challenges in mind. From inventory tracking to billing,
                   every feature is optimized for efficiency and ease of use.
                 </p>
                 <div style={{
@@ -305,7 +304,7 @@ export default function HomePage() {
               Ready to Transform Your Business?
             </h2>
             <p style={{ color: '#94a3b8', marginBottom: '2rem', fontSize: '1.125rem' }}>
-              Join thousands of merchants who trust StockFlow for their daily operations.
+              Join thousands of merchants who trust ShopLedger for their daily operations.
             </p>
             <Link href="/register">
               <Button variant="primary" size="lg" rightIcon={<ArrowRight size={20} />}>
@@ -326,14 +325,14 @@ export default function HomePage() {
         <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', color: 'white', fontSize: '1.5rem', fontWeight: 700 }}>
             <Store size={28} />
-            <span>StockFlow</span>
+            <span>ShopLedger</span>
           </div>
           <p style={{ color: '#64748b', fontSize: '0.9375rem', maxWidth: '400px', margin: '0 auto' }}>
             The smarter way to manage your retail business. Real-time insights, effortless billing, and more.
           </p>
           <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '2rem' }}>
             <p style={{ color: '#475569', fontSize: '0.875rem' }}>
-              © 2026 StockFlow. All rights reserved.
+              © 2026 ShopLedger. All rights reserved.
             </p>
           </div>
         </div>

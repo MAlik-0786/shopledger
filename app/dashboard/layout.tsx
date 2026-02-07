@@ -22,23 +22,7 @@ export default function DashboardLayout({
         }
     }, [user, loading, router]);
 
-    // Initialize sidebar state based on screen size
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth > 1024) {
-                setSidebarOpen(true);
-            } else {
-                setSidebarOpen(false);
-            }
-        };
 
-        // Set initial state
-        handleResize();
-
-        // Optional: Listen for resize if we want dynamic behavior (users rarely resize window significantly but good for completeness)
-        // window.addEventListener('resize', handleResize);
-        // return () => window.removeEventListener('resize', handleResize);
-    }, []);
 
     if (loading) {
         return <Loader fullScreen />;

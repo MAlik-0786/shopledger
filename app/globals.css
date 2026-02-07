@@ -577,6 +577,7 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 30;
+  transition: all var(--transition-slow);
 }
 
 .header-search {

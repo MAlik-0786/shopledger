@@ -1,4 +1,4 @@
-# StockFlow - Product Stock Management & Billing System
+# ShopLedger - Product Stock Management & Billing System
 
 A comprehensive multi-merchant product stock management and billing system built with Next.js, MongoDB, and TypeScript.
 

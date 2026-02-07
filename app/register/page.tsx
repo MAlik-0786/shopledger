@@ -195,7 +195,7 @@ export default function RegisterPage() {
                         marginBottom: '1rem',
                     }}>
                         <Store size={28} color="white" />
-                        <span style={{ color: 'white', fontSize: '1.25rem', fontWeight: 700 }}>StockFlow</span>
+                        <span style={{ color: 'white', fontSize: '1.25rem', fontWeight: 700 }}>ShopLedger</span>
                     </div>
                     <h1 style={{ color: 'white', fontSize: '1.375rem', fontWeight: 700, marginBottom: '0.5rem' }}>
                         Create Your Account

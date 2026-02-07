@@ -55,17 +55,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             {/* Sidebar */}
             <aside
                 className={`sidebar ${isOpen ? 'open' : ''}`}
-                style={{
-                    transform: isOpen ? 'translateX(0)' : undefined,
-                }}
             >
                 <div className="sidebar-header">
                     <div className="sidebar-logo">
                         <Store size={28} />
-                        <span>StockFlow</span>
+                        <span>ShopLedger</span>
                     </div>
                     <button
-                        className="lg:hidden absolute top-4 right-4 text-white/70 hover:text-white"
+                        className="absolute top-4 right-4 text-white/70 hover:text-white"
                         onClick={onClose}
                     >
                         <X size={24} />
