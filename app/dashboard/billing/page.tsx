@@ -465,29 +465,36 @@ export default function BillingPage() {
                                         { value: 'card', label: 'Card', icon: CreditCard },
                                         { value: 'upi', label: 'UPI', icon: Smartphone },
                                         { value: 'credit', label: 'Credit', icon: Receipt },
-                                    ].map(({ value, label, icon: Icon }) => (
-                                        <button
-                                            key={value}
-                                            onClick={() => setPaymentMethod(value as typeof paymentMethod)}
-                                            style={{
-                                                padding: '0.75rem 0.5rem',
-                                                border: paymentMethod === value ? '2px solid var(--color-primary-500)' : '1px solid var(--color-gray-200)',
-                                                borderRadius: '0.5rem',
-                                                background: paymentMethod === value ? 'var(--color-primary-50)' : 'transparent',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                gap: '0.25rem',
-                                                transition: 'all 0.2s',
-                                            }}
-                                        >
-                                            <Icon size={18} color={paymentMethod === value ? 'var(--color-primary-600)' : 'var(--text-muted)'} />
-                                            <span style={{ fontSize: '0.75rem', fontWeight: 500, color: paymentMethod === value ? 'var(--color-primary-600)' : 'var(--text-secondary)' }}>
-                                                {label}
-                                            </span>
-                                        </button>
-                                    ))}
+                                    ].map(({ value, label, icon: Icon }) => {
+                                        const isDisabled = value === 'card' || value === 'credit';
+                                        return (
+                                            <button
+                                                key={value}
+                                                disabled={isDisabled}
+                                                onClick={() => setPaymentMethod(value as typeof paymentMethod)}
+                                                style={{
+                                                    padding: '0.75rem 0.5rem',
+                                                    border: paymentMethod === value ? '2px solid var(--color-primary-500)' : '1px solid var(--color-gray-200)',
+                                                    borderRadius: '0.5rem',
+                                                    background: paymentMethod === value ? 'var(--color-primary-50)' : 'transparent',
+                                                    cursor: isDisabled ? 'not-allowed' : 'pointer',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'center',
+                                                    gap: '0.25rem',
+                                                    transition: 'all 0.2s',
+                                                    opacity: isDisabled ? 0.5 : 1,
+                                                    filter: isDisabled ? 'grayscale(0.8)' : 'none',
+                                                }}
+                                            >
+                                                <Icon size={18} color={paymentMethod === value ? 'var(--color-primary-600)' : 'var(--text-muted)'} />
+                                                <span style={{ fontSize: '0.75rem', fontWeight: 500, color: paymentMethod === value ? 'var(--color-primary-600)' : 'var(--text-secondary)' }}>
+                                                    {label}
+                                                </span>
+                                            </button>
+                                        );
+                                    })
+                                    }
                                 </div>
                             </div>
 

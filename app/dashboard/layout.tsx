@@ -53,7 +53,9 @@ export default function DashboardLayout({
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
             <div className={`main-content ${sidebarOpen ? 'shifted' : ''}`}>
-                <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+                <Header
+                    onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+                />
                 <main className="page-container">
                     {children}
                 </main>

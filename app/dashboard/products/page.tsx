@@ -68,10 +68,8 @@ export default function ProductsPage() {
 
     const fetchCategories = async () => {
         try {
-            console.log('Fetching categories...');
             const res = await fetch('/api/categories');
             const data = await res.json();
-            console.log('Categories response:', data);
             if (data.success) {
                 setCategories(data.data);
             }
