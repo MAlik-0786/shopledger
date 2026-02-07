@@ -38,6 +38,7 @@ export default function BillingPage() {
     const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | 'upi' | 'credit'>('cash');
     const [discountType, setDiscountType] = useState<'percentage' | 'fixed'>('fixed');
     const [discountValue, setDiscountValue] = useState(0);
+    const [isGstEnabled, setIsGstEnabled] = useState(false);
     const [taxRate, setTaxRate] = useState(18);
     const [notes, setNotes] = useState('');
 
@@ -181,7 +182,7 @@ export default function BillingPage() {
         ? (subtotal * discountValue) / 100
         : discountValue;
     const afterDiscount = subtotal - discountAmount;
-    const taxAmount = (afterDiscount * taxRate) / 100;
+    const taxAmount = isGstEnabled ? (afterDiscount * taxRate) / 100 : 0;
     const grandTotal = afterDiscount + taxAmount;
 
     const handleCheckout = async () => {
@@ -197,7 +198,7 @@ export default function BillingPage() {
                 productId: item.id,
                 quantity: item.quantity,
             })),
-            taxRate,
+            taxRate: isGstEnabled ? taxRate : 0,
             discountType,
             discountValue,
             customerName: customerName || undefined,
@@ -254,7 +255,7 @@ export default function BillingPage() {
                 {/* Left: Product Search & Cart */}
                 <div>
                     {/* Search Bar */}
-                    <div className="card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
+                    <div className="card" style={{ marginBottom: '1.5rem', padding: '1.5rem', overflow: 'visible' }}>
                         <div style={{ display: 'flex', gap: '1rem' }}>
                             <div style={{ position: 'relative', flex: 1 }}>
                                 <Search size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
@@ -279,7 +280,7 @@ export default function BillingPage() {
                                         borderRadius: '0.75rem',
                                         boxShadow: 'var(--shadow-lg)',
                                         marginTop: '0.5rem',
-                                        zIndex: 10,
+                                        zIndex: 50,
                                         maxHeight: '320px',
                                         overflowY: 'auto',
                                     }}>
@@ -516,6 +517,48 @@ export default function BillingPage() {
                                 </div>
                             </div>
 
+                            {/* GST Options */}
+                            <div style={{ marginBottom: '1.5rem' }}>
+                                <h4 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-secondary)' }}>
+                                    GST Options
+                                </h4>
+                                <div style={{ marginBottom: '0.75rem' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', marginBottom: '0.5rem' }}>
+                                        <input
+                                            type="radio"
+                                            name="gstOption"
+                                            checked={!isGstEnabled}
+                                            onChange={() => setIsGstEnabled(false)}
+                                        />
+                                        <span style={{ fontSize: '0.875rem' }}>No GST</span>
+                                    </label>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                        <input
+                                            type="radio"
+                                            name="gstOption"
+                                            checked={isGstEnabled}
+                                            onChange={() => setIsGstEnabled(true)}
+                                        />
+                                        <span style={{ fontSize: '0.875rem' }}>Add GST</span>
+                                    </label>
+                                </div>
+
+                                {isGstEnabled && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Rate:</span>
+                                        <input
+                                            type="number"
+                                            className="form-input"
+                                            value={taxRate}
+                                            onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
+                                            min={0}
+                                            style={{ fontSize: '0.875rem', padding: '0.625rem', width: '80px' }}
+                                        />
+                                        <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>%</span>
+                                    </div>
+                                )}
+                            </div>
+
                             {/* Summary Calculations */}
                             <div style={{
                                 borderTop: '1px solid var(--color-gray-200)',
@@ -532,10 +575,12 @@ export default function BillingPage() {
                                         <span>- {formatCurrency(discountAmount)}</span>
                                     </div>
                                 )}
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                    <span style={{ color: 'var(--text-secondary)' }}>Tax ({taxRate}%)</span>
-                                    <span style={{ fontWeight: 500 }}>{formatCurrency(taxAmount)}</span>
-                                </div>
+                                {isGstEnabled && (
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                        <span style={{ color: 'var(--text-secondary)' }}>Tax ({taxRate}%)</span>
+                                        <span style={{ fontWeight: 500 }}>{formatCurrency(taxAmount)}</span>
+                                    </div>
+                                )}
                                 <div style={{
                                     display: 'flex',
                                     justifyContent: 'space-between',

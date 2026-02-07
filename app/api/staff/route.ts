@@ -125,8 +125,26 @@ export async function POST(request: NextRequest) {
             { success: true, data: staffProfile, message: 'Staff member created successfully' },
             { status: 201 }
         );
-    } catch (error) {
+    } catch (error: any) {
         console.error('Create staff error:', error);
+
+        // Handle Mongoose validation errors
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map((err: any) => err.message);
+            return NextResponse.json<ApiResponse>(
+                { success: false, error: messages.join(', ') },
+                { status: 400 }
+            );
+        }
+
+        // Handle duplicate key errors
+        if (error.code === 11000) {
+            return NextResponse.json<ApiResponse>(
+                { success: false, error: 'Staff member with this email already exists' },
+                { status: 400 }
+            );
+        }
+
         return NextResponse.json<ApiResponse>(
             { success: false, error: 'Internal server error' },
             { status: 500 }

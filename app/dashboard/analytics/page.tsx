@@ -114,22 +114,10 @@ export default function AnalyticsPage() {
             {/* Summary Stats */}
             <div className="grid-stats" style={{ marginBottom: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
                 <StatCard
-                    title="Total Revenue (w/ GST)"
+                    title="Total Revenue"
                     value={formatCurrency(totalRevenue)}
                     icon={TrendingUp}
                     color="primary"
-                />
-                <StatCard
-                    title="Net Revenue (w/o GST)"
-                    value={formatCurrency(totalSubtotal)}
-                    icon={TrendingUp}
-                    color="info"
-                />
-                <StatCard
-                    title="Total GST"
-                    value={formatCurrency(totalTax)}
-                    icon={FileText} // Or another icon like Landmark or Receipt
-                    color="warning"
                 />
                 <StatCard
                     title="Total Orders"

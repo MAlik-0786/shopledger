@@ -11,9 +11,11 @@ import {
     Filter,
     X,
     Download,
+    Barcode as BarcodeIcon,
 } from 'lucide-react';
 import { Button, Input, Modal, Badge, EmptyState, Loader } from '@/components/ui';
 import { ProductProfile, CategoryProfile, ProductData } from '@/types';
+import Barcode from 'react-barcode';
 
 export default function ProductsPage() {
     const [products, setProducts] = useState<ProductProfile[]>([]);
@@ -26,7 +28,7 @@ export default function ProductsPage() {
     // Modal states
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isQRModalOpen, setIsQRModalOpen] = useState(false);
+    const [isBarcodeModalOpen, setIsBarcodeModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<ProductProfile | null>(null);
     const [formLoading, setFormLoading] = useState(false);
 
@@ -215,9 +217,9 @@ export default function ProductsPage() {
         setIsEditModalOpen(true);
     };
 
-    const openQRModal = (product: ProductProfile) => {
+    const openBarcodeModal = (product: ProductProfile) => {
         setSelectedProduct(product);
-        setIsQRModalOpen(true);
+        setIsBarcodeModalOpen(true);
     };
 
     const resetForm = () => {
@@ -242,11 +244,19 @@ export default function ProductsPage() {
         }).format(value);
     };
 
-    const downloadQR = () => {
-        if (!selectedProduct?.qrCode) return;
+    const downloadBarcode = () => {
+        if (!selectedProduct) return;
+        const svg = document.querySelector('.barcode-container svg');
+        if (!svg) return;
+
+        const xml = new XMLSerializer().serializeToString(svg);
+        const svg64 = btoa(xml);
+        const b64Start = 'data:image/svg+xml;base64,';
+        const image64 = b64Start + svg64;
+
         const link = document.createElement('a');
-        link.href = selectedProduct.qrCode;
-        link.download = `${selectedProduct.sku}-qr.png`;
+        link.href = image64;
+        link.download = `${selectedProduct.sku}-barcode.svg`;
         link.click();
     };
 
@@ -415,10 +425,10 @@ export default function ProductsPage() {
                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                             <button
                                                 className="btn btn-ghost btn-icon btn-sm"
-                                                onClick={() => openQRModal(product)}
-                                                title="View QR Code"
+                                                onClick={() => openBarcodeModal(product)}
+                                                title="View Barcode"
                                             >
-                                                <QrCode size={16} />
+                                                <BarcodeIcon size={16} />
                                             </button>
                                             <button
                                                 className="btn btn-ghost btn-icon btn-sm"
@@ -705,37 +715,33 @@ export default function ProductsPage() {
                 </form>
             </Modal>
 
-            {/* QR Code Modal */}
+            {/* Barcode Modal */}
             <Modal
-                isOpen={isQRModalOpen}
-                onClose={() => setIsQRModalOpen(false)}
-                title="Product QR Code"
+                isOpen={isBarcodeModalOpen}
+                onClose={() => setIsBarcodeModalOpen(false)}
+                title="Product Barcode"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setIsQRModalOpen(false)}>Close</Button>
-                        <Button variant="primary" leftIcon={<Download size={18} />} onClick={downloadQR}>
-                            Download
+                        <Button variant="secondary" onClick={() => setIsBarcodeModalOpen(false)}>Close</Button>
+                        <Button variant="primary" leftIcon={<Download size={18} />} onClick={downloadBarcode}>
+                            Download SVG
                         </Button>
                     </>
                 }
             >
                 {selectedProduct && (
-                    <div style={{ textAlign: 'center' }}>
-                        <div className="qr-container" style={{ margin: '0 auto', maxWidth: '250px' }}>
-                            <img
-                                src={selectedProduct.qrCode}
-                                alt={`QR Code for ${selectedProduct.name}`}
-                                style={{ width: '200px', height: '200px' }}
-                            />
-                            <div>
-                                <div style={{ fontWeight: 600 }}>{selectedProduct.name}</div>
-                                <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                                    SKU: {selectedProduct.sku}
-                                </div>
+                    <div style={{ textAlign: 'center', padding: '1rem' }}>
+                        <div className="barcode-container" style={{ margin: '0 auto', display: 'inline-block' }}>
+                            <div style={{ fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem' }}>
+                                {selectedProduct.name}
+                            </div>
+                            <Barcode value={selectedProduct.sku} width={2} height={80} fontSize={16} />
+                            <div style={{ fontWeight: 'bold', fontSize: '1.25rem', marginTop: '0.5rem' }}>
+                                {formatCurrency(selectedProduct.price)}
                             </div>
                         </div>
-                        <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                            Scan this QR code to quickly add this product during billing
+                        <p style={{ marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                            Print this label for your product shelves
                         </p>
                     </div>
                 )}
