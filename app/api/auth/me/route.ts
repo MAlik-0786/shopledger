@@ -36,6 +36,14 @@ export async function GET(request: NextRequest) {
                 merchantId: merchant._id.toString(),
                 name: merchant.ownerName,
                 shopName: merchant.shopName,
+                phone: merchant.phone,
+                address: merchant.address,
+                city: merchant.city,
+                state: merchant.state,
+                pincode: merchant.pincode,
+                gstNumber: merchant.gstNumber,
+                businessType: merchant.businessType,
+                isEmailVerified: merchant.isEmailVerified,
             };
         } else {
             const staff = await Staff.findById(tokenPayload.id).select('-password').populate('merchantId', 'shopName');
@@ -52,6 +60,7 @@ export async function GET(request: NextRequest) {
                 id: staff._id.toString(),
                 email: staff.email,
                 role: 'staff',
+                staffRole: staff.role,
                 merchantId: merchantData._id.toString(),
                 name: staff.name,
                 shopName: merchantData.shopName,

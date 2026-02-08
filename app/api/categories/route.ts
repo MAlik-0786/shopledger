@@ -79,12 +79,13 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (user.role === 'staff') {
+        if (user.role === 'staff' && !['manager', 'cashier', 'inventory'].includes(user.staffRole || '')) {
             return NextResponse.json<ApiResponse>(
                 { success: false, error: 'Permission denied' },
                 { status: 403 }
             );
         }
+
 
         await dbConnect();
 

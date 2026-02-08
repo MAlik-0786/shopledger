@@ -109,13 +109,14 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Check permission (only merchant and manager can create products)
-        if (user.role === 'staff') {
+        // Check permission (merchant, manager, cashier, inventory can create products)
+        if (user.role === 'staff' && !['manager', 'cashier', 'inventory'].includes(user.staffRole || '')) {
             return NextResponse.json<ApiResponse>(
                 { success: false, error: 'Permission denied' },
                 { status: 403 }
             );
         }
+
 
         await dbConnect();
 

@@ -75,6 +75,7 @@ export async function GET(request: NextRequest) {
                 sku: item.sku,
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
+                costPrice: item.costPrice || 0,
                 totalPrice: item.totalPrice,
             })),
             subtotal: invoice.subtotal,
@@ -184,6 +185,7 @@ export async function POST(request: NextRequest) {
                 sku: product.sku,
                 quantity: item.quantity,
                 unitPrice: product.price,
+                costPrice: product.costPrice || 0,
                 totalPrice,
             });
         }

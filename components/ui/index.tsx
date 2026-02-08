@@ -12,6 +12,7 @@ interface StatCardProps {
         isPositive: boolean;
     };
     color: 'primary' | 'success' | 'warning' | 'error' | 'info';
+    style?: React.CSSProperties;
 }
 
 const colorMap = {
@@ -37,11 +38,11 @@ const colorMap = {
     },
 };
 
-export function StatCard({ title, value, icon: Icon, trend, color }: StatCardProps) {
+export function StatCard({ title, value, icon: Icon, trend, color, style }: StatCardProps) {
     const colors = colorMap[color];
 
     return (
-        <div className="stat-card">
+        <div className="stat-card" style={style}>
             <div
                 className="icon-wrapper"
                 style={{ background: colors.bg }}

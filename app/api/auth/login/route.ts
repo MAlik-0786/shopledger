@@ -67,8 +67,10 @@ export async function POST(request: NextRequest) {
             id: user._id.toString(),
             email: user.email,
             role,
+            staffRole: role === 'staff' ? (user as any).role : undefined,
             merchantId: role === 'merchant' ? user._id.toString() : merchantId,
         });
+
 
         let userData: MerchantProfile | StaffProfile;
 

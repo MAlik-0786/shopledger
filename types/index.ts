@@ -37,8 +37,17 @@ export interface AuthUser {
     name: string;
     email: string;
     role: 'merchant' | 'staff';
+    staffRole?: 'manager' | 'cashier' | 'inventory' | 'viewer';
+    merchantId: string;
     shopName?: string;
     phone?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    pincode?: string;
+    gstNumber?: string;
+    businessType?: string;
+    isEmailVerified?: boolean;
 }
 
 export interface MerchantProfile {
@@ -162,6 +171,7 @@ export interface InvoiceItem {
     sku: string;
     quantity: number;
     unitPrice: number;
+    costPrice: number;
     totalPrice: number;
 }
 
@@ -171,6 +181,7 @@ export interface InvoiceItemProfile {
     sku: string;
     quantity: number;
     unitPrice: number;
+    costPrice: number;
     totalPrice: number;
 }
 
@@ -219,6 +230,8 @@ export interface DashboardStats {
     todayInvoices: number;
     totalRevenue: number;
     todaySales: number;
+    totalProfit: number;
+    todayProfit: number;
     lowStockCount: number;
     totalTax: number;
     totalRevenueWithoutTax: number;
@@ -230,6 +243,7 @@ export interface RevenueData {
     subtotal: number;
     tax: number;
     orders: number;
+    cost?: number;
 }
 
 export interface TopProduct {

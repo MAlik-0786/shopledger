@@ -46,13 +46,24 @@ export async function GET(request: NextRequest) {
                     {
                         $group: {
                             _id: null,
-                            totalRevenue: { $sum: '$grandTotal' },
+                            totalRevenue: { $sum: { $subtract: ['$subtotal', '$discountAmount'] } },
                             totalTax: { $sum: '$taxAmount' },
-                            totalSubtotal: { $sum: '$subtotal' }
+                            totalGrandTotal: { $sum: '$grandTotal' },
+                            totalItemCost: {
+                                $sum: {
+                                    $sum: {
+                                        $map: {
+                                            input: '$items',
+                                            as: 'item',
+                                            in: { $multiply: [{ $ifNull: ['$$item.costPrice', 0] }, '$$item.quantity'] }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     },
                 ]),
-                // Today's sales
+                // Today's stats
                 Invoice.aggregate([
                     {
                         $match: {
@@ -60,7 +71,23 @@ export async function GET(request: NextRequest) {
                             createdAt: { $gte: startOfToday },
                         },
                     },
-                    { $group: { _id: null, total: { $sum: '$grandTotal' } } },
+                    {
+                        $group: {
+                            _id: null,
+                            todayRevenue: { $sum: { $subtract: ['$subtotal', '$discountAmount'] } },
+                            todayItemCost: {
+                                $sum: {
+                                    $sum: {
+                                        $map: {
+                                            input: '$items',
+                                            as: 'item',
+                                            in: { $multiply: [{ $ifNull: ['$$item.costPrice', 0] }, '$$item.quantity'] }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
                 ]),
                 // Total products
                 Product.countDocuments({ merchantId, isActive: true }),
@@ -82,8 +109,10 @@ export async function GET(request: NextRequest) {
             const stats: DashboardStats = {
                 totalRevenue: totalRevenue[0]?.totalRevenue || 0,
                 totalTax: totalRevenue[0]?.totalTax || 0,
-                totalRevenueWithoutTax: totalRevenue[0]?.totalSubtotal || 0,
-                todaySales: todaySales[0]?.total || 0,
+                totalRevenueWithoutTax: totalRevenue[0]?.totalRevenue || 0,
+                todaySales: todaySales[0]?.todayRevenue || 0,
+                totalProfit: (totalRevenue[0]?.totalRevenue || 0) - (totalRevenue[0]?.totalItemCost || 0),
+                todayProfit: (todaySales[0]?.todayRevenue || 0) - (todaySales[0]?.todayItemCost || 0),
                 totalProducts,
                 lowStockCount,
                 totalInvoices,
@@ -110,9 +139,20 @@ export async function GET(request: NextRequest) {
                             $dateToString: { format: '%Y-%m-%d', date: '$createdAt' },
                         },
                         revenue: { $sum: '$grandTotal' },
-                        subtotal: { $sum: '$subtotal' }, // Assuming subtotal field exists
-                        tax: { $sum: '$taxAmount' },     // Assuming taxAmount field exists
+                        subtotal: { $sum: '$subtotal' },
+                        tax: { $sum: '$taxAmount' },
                         orders: { $sum: 1 },
+                        cost: {
+                            $sum: {
+                                $sum: {
+                                    $map: {
+                                        input: '$items',
+                                        as: 'item',
+                                        in: { $multiply: [{ $ifNull: ['$$item.costPrice', 0] }, '$$item.quantity'] }
+                                    }
+                                }
+                            }
+                        }
                     },
                 },
                 { $sort: { _id: 1 } },
@@ -124,6 +164,7 @@ export async function GET(request: NextRequest) {
                 subtotal: item.subtotal,
                 tax: item.tax,
                 orders: item.orders,
+                cost: item.cost,
             }));
 
             return NextResponse.json<ApiResponse<RevenueData[]>>(

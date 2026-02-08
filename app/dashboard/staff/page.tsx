@@ -17,11 +17,12 @@ import { StaffProfile, StaffData } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 
 const roleOptions = [
-    { value: 'manager', label: 'Manager', description: 'Full access except billing' },
-    { value: 'cashier', label: 'Cashier', description: 'Billing and view products' },
-    { value: 'inventory', label: 'Inventory', description: 'Manage products only' },
-    { value: 'viewer', label: 'Viewer', description: 'View only access' },
+    { value: 'manager', label: 'Manager', description: 'Full access to all modules' },
+    { value: 'cashier', label: 'Cashier', description: 'Billing, Invoices and Manage Products' },
+    { value: 'inventory', label: 'Inventory', description: 'Manage products and categories' },
+    { value: 'viewer', label: 'Viewer', description: 'No admin access' },
 ];
+
 
 export default function StaffPage() {
     const [staff, setStaff] = useState<StaffProfile[]>([]);
@@ -370,15 +371,19 @@ export default function StaffPage() {
                         placeholder="Enter email address"
                         required
                     />
-                    <Input
-                        label="Password *"
-                        name="password"
-                        type="password"
-                        value={formData.password}
-                        onChange={handleFormChange}
-                        placeholder="Create a password"
-                        required
-                    />
+                    {/* Only show password field for roles that need access */}
+                    {(formData.role === 'manager' || formData.role === 'cashier' || formData.role === 'inventory') && (
+                        <Input
+                            label="Password *"
+                            name="password"
+                            type="password"
+                            value={formData.password}
+                            onChange={handleFormChange}
+                            placeholder="Create a password"
+                            required
+                        />
+                    )}
+
                     <Input
                         label="Phone Number *"
                         name="phone"
@@ -436,14 +441,18 @@ export default function StaffPage() {
                         disabled
                         helperText="Email cannot be changed"
                     />
-                    <Input
-                        label="New Password"
-                        name="password"
-                        type="password"
-                        value={formData.password}
-                        onChange={handleFormChange}
-                        placeholder="Leave blank to keep current"
-                    />
+                    {/* Only show password field for roles that need access */}
+                    {(formData.role === 'manager' || formData.role === 'cashier' || formData.role === 'inventory') && (
+                        <Input
+                            label="New Password"
+                            name="password"
+                            type="password"
+                            value={formData.password}
+                            onChange={handleFormChange}
+                            placeholder="Leave blank to keep current"
+                        />
+                    )}
+
                     <Input
                         label="Phone Number *"
                         name="phone"

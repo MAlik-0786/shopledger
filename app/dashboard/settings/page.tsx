@@ -11,7 +11,7 @@ import {
     Save,
     CheckCircle,
 } from 'lucide-react';
-import { Button, Input, Alert, Loader } from '@/components/ui';
+import { Button, Input, Alert, Loader, Badge, Modal } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 
 export default function SettingsPage() {
@@ -19,6 +19,13 @@ export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState('shop');
     const [loading, setLoading] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
+    const [error, setError] = useState('');
+
+    // Verification states
+    const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false);
+    const [otp, setOtp] = useState('');
+    const [verifying, setVerifying] = useState(false);
+    const [verificationStep, setVerificationStep] = useState(1); // 1: Send, 2: Verify
 
     // Form states
     const [shopData, setShopData] = useState({
@@ -72,15 +79,79 @@ export default function SettingsPage() {
 
     const handleSaveShop = async () => {
         setLoading(true);
+        setError('');
         try {
-            // In a real app, this would call an API
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            setSaveSuccess(true);
-            setTimeout(() => setSaveSuccess(false), 3000);
+            const res = await fetch('/api/auth/profile', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(activeTab === 'shop' ? shopData : profileData),
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                setSaveSuccess(true);
+                await fetchUser();
+                setTimeout(() => setSaveSuccess(false), 3000);
+            } else {
+                setError(data.error || 'Failed to update settings');
+            }
         } catch (error) {
             console.error('Error saving settings:', error);
+            setError('Connection error');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSendVerification = async () => {
+        setVerifying(true);
+        setError('');
+        try {
+            const res = await fetch('/api/auth/send-verification-otp', {
+                method: 'POST',
+            });
+            const data = await res.json();
+            if (data.success) {
+                setVerificationStep(2);
+            } else {
+                setError(data.error || 'Failed to send verification code');
+            }
+        } catch (err) {
+            setError('Connection error');
+        } finally {
+            setVerifying(false);
+        }
+    };
+
+    const handleVerifyEmail = async () => {
+        if (!otp || otp.length < 6) {
+            setError('Please enter the 6-digit code');
+            return;
+        }
+
+        setVerifying(true);
+        setError('');
+        try {
+            const res = await fetch('/api/auth/verify-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ otp }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                setIsVerifyModalOpen(false);
+                setOtp('');
+                setVerificationStep(1);
+                await fetchUser();
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 3000);
+            } else {
+                setError(data.error || 'Verification failed');
+            }
+        } catch (err) {
+            setError('Connection error');
+        } finally {
+            setVerifying(false);
         }
     };
 
@@ -127,8 +198,14 @@ export default function SettingsPage() {
                 <div style={{ marginBottom: '1.5rem' }}>
                     <Alert variant="success">
                         <CheckCircle size={18} style={{ marginRight: '0.5rem' }} />
-                        Settings saved successfully!
+                        Changes saved successfully!
                     </Alert>
+                </div>
+            )}
+
+            {error && (
+                <div style={{ marginBottom: '1.5rem' }}>
+                    <Alert variant="error">{error}</Alert>
                 </div>
             )}
 
@@ -183,12 +260,40 @@ export default function SettingsPage() {
                                             value={shopData.phone}
                                             onChange={(e) => setShopData({ ...shopData, phone: e.target.value })}
                                         />
-                                        <Input
-                                            label="Email"
-                                            type="email"
-                                            value={shopData.email}
-                                            onChange={(e) => setShopData({ ...shopData, email: e.target.value })}
-                                        />
+                                        <div className="form-group">
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '0.5rem' }}>
+                                                <label className="form-label" style={{ marginBottom: 0 }}>Email</label>
+                                                {user?.isEmailVerified ? (
+                                                    <span style={{ color: 'var(--color-success)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 600 }}>
+                                                        <CheckCircle size={14} />
+                                                        Verified
+                                                    </span>
+                                                ) : (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsVerifyModalOpen(true)}
+                                                        style={{
+                                                            fontSize: '0.75rem',
+                                                            color: 'var(--color-primary-600)',
+                                                            background: 'none',
+                                                            border: 'none',
+                                                            cursor: 'pointer',
+                                                            fontWeight: 600,
+                                                            padding: 0
+                                                        }}
+                                                    >
+                                                        Verify Now
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <input
+                                                className="form-input"
+                                                type="email"
+                                                value={shopData.email}
+                                                disabled
+                                                style={{ background: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}
+                                            />
+                                        </div>
                                     </div>
                                     <Input
                                         label="Address"
@@ -429,6 +534,80 @@ export default function SettingsPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Email Verification Modal */}
+            <Modal
+                isOpen={isVerifyModalOpen}
+                onClose={() => {
+                    setIsVerifyModalOpen(false);
+                    setError('');
+                    setOtp('');
+                    setVerificationStep(1);
+                }}
+                title="Verify Email Address"
+                size="sm"
+            >
+                <div style={{ textAlign: 'center', padding: '1rem 0' }}>
+                    {verificationStep === 1 ? (
+                        <>
+                            <div style={{
+                                width: '64px',
+                                height: '64px',
+                                background: 'var(--color-primary-50)',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                margin: '0 auto 1.5rem',
+                                color: 'var(--color-primary-600)'
+                            }}>
+                                <Bell size={32} />
+                            </div>
+                            <p style={{ marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>
+                                We will send a 6-digit verification code to <strong>{user?.email}</strong>
+                            </p>
+                            <Button
+                                variant="primary"
+                                style={{ width: '100%' }}
+                                onClick={handleSendVerification}
+                                isLoading={verifying}
+                            >
+                                Send Code
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <p style={{ marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>
+                                Enter the 6-digit code sent to your email
+                            </p>
+                            <div style={{ marginBottom: '1.5rem' }}>
+                                <Input
+                                    value={otp}
+                                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                    placeholder="000000"
+                                    style={{ textAlign: 'center', fontSize: '1.5rem', letterSpacing: '8px', fontWeight: 'bold' }}
+                                />
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => setVerificationStep(1)}
+                                    disabled={verifying}
+                                >
+                                    Resend
+                                </Button>
+                                <Button
+                                    variant="primary"
+                                    onClick={handleVerifyEmail}
+                                    isLoading={verifying}
+                                >
+                                    Verify
+                                </Button>
+                            </div>
+                        </>
+                    )}
+                </div>
+            </Modal>
         </div>
     );
 }

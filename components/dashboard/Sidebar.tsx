@@ -89,6 +89,32 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
                 <nav className="sidebar-nav">
                     {navItems.map((item) => {
+                        // Role-based access control for sidebar items
+                        if (user?.role === 'staff') {
+                            const role = user.staffRole;
+
+                            // Specific restrictions
+                            if (item.href === '/dashboard/staff' || item.href === '/dashboard/settings') {
+                                if (role !== 'manager') return null;
+                            }
+
+                            if (item.href === '/dashboard/analytics') {
+                                if (role !== 'manager' && role !== 'cashier') return null;
+                            }
+
+                            if (item.href === '/dashboard/products') {
+                                if (role !== 'manager' && role !== 'cashier' && role !== 'inventory') return null;
+                            }
+
+                            if (item.href === '/dashboard/billing' || item.href === '/dashboard/invoices') {
+                                if (role !== 'manager' && role !== 'cashier') return null;
+                            }
+
+                            if (item.href === '/dashboard' && role === 'viewer') {
+                                return null;
+                            }
+                        }
+
                         const isActive = pathname === item.href ||
                             (item.href !== '/dashboard' && pathname.startsWith(item.href));
                         const Icon = item.icon;

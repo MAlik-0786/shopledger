@@ -14,6 +14,9 @@ export interface IMerchant extends Document {
     gstNumber?: string;
     logo?: string;
     isActive: boolean;
+    otp?: string;
+    otpExpires?: Date;
+    isEmailVerified: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -86,6 +89,16 @@ const MerchantSchema = new Schema<IMerchant>(
         isActive: {
             type: Boolean,
             default: true,
+        },
+        otp: {
+            type: String,
+        },
+        otpExpires: {
+            type: Date,
+        },
+        isEmailVerified: {
+            type: Boolean,
+            default: false,
         },
     },
     {

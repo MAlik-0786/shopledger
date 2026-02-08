@@ -78,13 +78,19 @@ export default function DashboardPage() {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid-stats" style={{ marginBottom: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
+            <div className="grid-stats" style={{ marginBottom: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                 <StatCard
                     title="Total Revenue"
                     value={formatCurrency(stats?.totalRevenue || 0)}
                     icon={TrendingUp}
                     color="primary"
-                    trend={{ value: 12.5, isPositive: true }}
+                />
+                <StatCard
+                    title="Pure Profit"
+                    value={formatCurrency(stats?.totalProfit || 0)}
+                    icon={TrendingUp}
+                    color="info"
+                    style={{ background: 'linear-gradient(135deg, #a855f7 0%, #8b5cf6 100%)', color: 'white' }}
                 />
                 <StatCard
                     title="Today's Sales"
@@ -93,9 +99,9 @@ export default function DashboardPage() {
                     color="success"
                 />
                 <StatCard
-                    title="Total Products"
-                    value={stats?.totalProducts || 0}
-                    icon={Package}
+                    title="Today's Profit"
+                    value={formatCurrency(stats?.todayProfit || 0)}
+                    icon={TrendingUp}
                     color="info"
                 />
                 <StatCard

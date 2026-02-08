@@ -112,12 +112,19 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Summary Stats */}
-            <div className="grid-stats" style={{ marginBottom: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
+            <div className="grid-stats" style={{ marginBottom: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                 <StatCard
                     title="Total Revenue"
                     value={formatCurrency(totalRevenue)}
                     icon={TrendingUp}
                     color="primary"
+                />
+                <StatCard
+                    title="Pure Profit"
+                    value={formatCurrency(stats?.totalProfit || 0)}
+                    icon={TrendingUp}
+                    color="info"
+                    style={{ background: 'linear-gradient(135deg, #a855f7 0%, #8b5cf6 100%)', color: 'white' }}
                 />
                 <StatCard
                     title="Total Orders"
@@ -148,12 +155,11 @@ export default function AnalyticsPage() {
                     <CategoryDistribution data={categorySales} />
                 </div>
 
-                {/* Sales Comparison */}
                 <SalesComparisonChart
                     data={revenueData.map((d) => ({
                         date: d.date,
                         sales: d.revenue,
-                        expenses: d.orders * avgOrderValue * 0.3, // Mock expense data
+                        expenses: d.cost || 0,
                     }))}
                 />
             </div>

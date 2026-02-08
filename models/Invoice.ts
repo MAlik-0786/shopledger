@@ -6,6 +6,7 @@ export interface IInvoiceItem {
     sku: string;
     quantity: number;
     unitPrice: number;
+    costPrice: number;
     totalPrice: number;
 }
 
@@ -54,6 +55,12 @@ const InvoiceItemSchema = new Schema<IInvoiceItem>(
             type: Number,
             required: true,
             min: [0, 'Unit price cannot be negative'],
+        },
+        costPrice: {
+            type: Number,
+            required: true,
+            min: [0, 'Cost price cannot be negative'],
+            default: 0,
         },
         totalPrice: {
             type: Number,

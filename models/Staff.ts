@@ -8,6 +8,9 @@ export interface IStaff extends Document {
     phone: string;
     role: 'manager' | 'cashier' | 'inventory' | 'viewer';
     isActive: boolean;
+    otp?: string;
+    otpExpires?: Date;
+    isEmailVerified: boolean;
     lastLogin?: Date;
     createdAt: Date;
     updatedAt: Date;
@@ -55,6 +58,16 @@ const StaffSchema = new Schema<IStaff>(
         isActive: {
             type: Boolean,
             default: true,
+        },
+        otp: {
+            type: String,
+        },
+        otpExpires: {
+            type: Date,
+        },
+        isEmailVerified: {
+            type: Boolean,
+            default: false,
         },
         lastLogin: {
             type: Date,

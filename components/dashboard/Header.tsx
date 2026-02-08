@@ -69,10 +69,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
                     <Menu size={24} />
                 </button>
 
-                <div className="header-search">
-                    <Search className="search-icon" />
-                    <input type="text" placeholder="Search products, invoices..." />
-                </div>
+
             </div>
 
             <div className="header-actions">

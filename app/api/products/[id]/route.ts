@@ -81,12 +81,13 @@ export async function PUT(
             );
         }
 
-        if (user.role === 'staff') {
+        if (user.role === 'staff' && !['manager', 'cashier', 'inventory'].includes(user.staffRole || '')) {
             return NextResponse.json<ApiResponse>(
                 { success: false, error: 'Permission denied' },
                 { status: 403 }
             );
         }
+
 
         await dbConnect();
 
@@ -184,12 +185,13 @@ export async function DELETE(
             );
         }
 
-        if (user.role === 'staff') {
+        if (user.role === 'staff' && !['manager', 'cashier', 'inventory'].includes(user.staffRole || '')) {
             return NextResponse.json<ApiResponse>(
                 { success: false, error: 'Permission denied' },
                 { status: 403 }
             );
         }
+
 
         await dbConnect();
 

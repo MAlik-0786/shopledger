@@ -7,6 +7,7 @@ export interface TokenPayload {
     id: string;
     email: string;
     role: 'merchant' | 'staff';
+    staffRole?: string;
     merchantId?: string;
 }
 

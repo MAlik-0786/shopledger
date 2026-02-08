@@ -19,6 +19,7 @@
     "lucide-react": "^0.563.0",
     "mongoose": "^9.1.6",
     "next": "16.1.6",
+    "nodemailer": "^8.0.1",
     "qrcode": "^1.5.4",
     "react": "19.2.3",
     "react-barcode": "^1.6.1",
@@ -28,6 +29,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/nodemailer": "^7.0.9",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
