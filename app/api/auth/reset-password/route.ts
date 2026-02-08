@@ -45,11 +45,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        console.log(`User found in ${modelName}. DB OTP: "${user.otp}", Expiry: ${user.otpExpires}`);
 
         // Check OTP (ensure both are strings for comparison)
         if (String(user.otp) !== String(otp)) {
-            console.log(`Error: OTP mismatch. Expected "${user.otp}", got "${otp}"`);
             return NextResponse.json<ApiResponse>(
                 { success: false, error: 'Invalid verification code' },
                 { status: 400 }

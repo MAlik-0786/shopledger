@@ -40,8 +40,6 @@ export async function POST(request: NextRequest) {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-        console.log(`Sending verification OTP to ${user.email}: ${otp}`);
-
         // Update using findOneAndUpdate to bypass validation
         await model.findOneAndUpdate(
             { _id: user._id },

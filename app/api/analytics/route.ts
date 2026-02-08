@@ -3,6 +3,7 @@ import { Types } from 'mongoose';
 import dbConnect from '@/lib/db';
 import Invoice from '@/models/Invoice';
 import Product from '@/models/Product';
+import Category from '@/models/Category';
 import { getUserFromRequest } from '@/lib/auth';
 import { ApiResponse, DashboardStats, RevenueData, TopProduct, CategorySales } from '@/types';
 
@@ -19,7 +20,23 @@ export async function GET(request: NextRequest) {
         await dbConnect();
 
         const merchantId = user.role === 'merchant' ? user.id : user.merchantId;
-        const merchantObjectId = new Types.ObjectId(merchantId);
+
+        if (!merchantId) {
+            return NextResponse.json<ApiResponse>(
+                { success: false, error: 'Merchant context not found' },
+                { status: 400 }
+            );
+        }
+
+        let merchantObjectId: Types.ObjectId;
+        try {
+            merchantObjectId = new Types.ObjectId(merchantId);
+        } catch (e) {
+            return NextResponse.json<ApiResponse>(
+                { success: false, error: 'Invalid User/Merchant ID' },
+                { status: 400 }
+            );
+        }
 
         const { searchParams } = new URL(request.url);
         const type = searchParams.get('type') || 'dashboard';
@@ -39,6 +56,7 @@ export async function GET(request: NextRequest) {
                 lowStockCount,
                 totalInvoices,
                 todayInvoices,
+                totalCategories,
             ] = await Promise.all([
                 // Financials
                 Invoice.aggregate([
@@ -53,9 +71,9 @@ export async function GET(request: NextRequest) {
                                 $sum: {
                                     $sum: {
                                         $map: {
-                                            input: '$items',
+                                            input: { $ifNull: ['$items', []] },
                                             as: 'item',
-                                            in: { $multiply: [{ $ifNull: ['$$item.costPrice', 0] }, '$$item.quantity'] }
+                                            in: { $multiply: [{ $ifNull: ['$$item.costPrice', 0] }, { $ifNull: ['$$item.quantity', 0] }] }
                                         }
                                     }
                                 }
@@ -79,9 +97,9 @@ export async function GET(request: NextRequest) {
                                 $sum: {
                                     $sum: {
                                         $map: {
-                                            input: '$items',
+                                            input: { $ifNull: ['$items', []] },
                                             as: 'item',
-                                            in: { $multiply: [{ $ifNull: ['$$item.costPrice', 0] }, '$$item.quantity'] }
+                                            in: { $multiply: [{ $ifNull: ['$$item.costPrice', 0] }, { $ifNull: ['$$item.quantity', 0] }] }
                                         }
                                     }
                                 }
@@ -104,16 +122,19 @@ export async function GET(request: NextRequest) {
                     merchantId,
                     createdAt: { $gte: startOfToday },
                 }),
+                // Total categories
+                Category.countDocuments({ merchantId, isActive: true }),
             ]);
 
             const stats: DashboardStats = {
-                totalRevenue: totalRevenue[0]?.totalRevenue || 0,
+                totalRevenue: totalRevenue[0]?.totalGrandTotal || 0,
                 totalTax: totalRevenue[0]?.totalTax || 0,
                 totalRevenueWithoutTax: totalRevenue[0]?.totalRevenue || 0,
                 todaySales: todaySales[0]?.todayRevenue || 0,
                 totalProfit: (totalRevenue[0]?.totalRevenue || 0) - (totalRevenue[0]?.totalItemCost || 0),
                 todayProfit: (todaySales[0]?.todayRevenue || 0) - (todaySales[0]?.todayItemCost || 0),
                 totalProducts,
+                totalCategories,
                 lowStockCount,
                 totalInvoices,
                 todayInvoices,
@@ -146,9 +167,9 @@ export async function GET(request: NextRequest) {
                             $sum: {
                                 $sum: {
                                     $map: {
-                                        input: '$items',
+                                        input: { $ifNull: ['$items', []] },
                                         as: 'item',
-                                        in: { $multiply: [{ $ifNull: ['$$item.costPrice', 0] }, '$$item.quantity'] }
+                                        in: { $multiply: [{ $ifNull: ['$$item.costPrice', 0] }, { $ifNull: ['$$item.quantity', 0] }] }
                                     }
                                 }
                             }
@@ -195,7 +216,7 @@ export async function GET(request: NextRequest) {
             ]);
 
             const formattedProducts: TopProduct[] = topProducts.map((item) => ({
-                productId: item._id.toString(),
+                productId: item._id ? item._id.toString() : 'unknown',
                 name: item.name,
                 totalSold: item.totalSold,
                 revenue: item.revenue,

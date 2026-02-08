@@ -766,7 +766,7 @@ export default function BillingPage() {
                         </Button>
                     </div>
                 </div>
-            </Modal>
-        </div>
+            </Modal >
+        </div >
     );
 }

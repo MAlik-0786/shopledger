@@ -71,8 +71,8 @@ export default function HomePage() {
       }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'white', fontSize: '1.5rem', fontWeight: 700 }}>
-            <Store size={32} />
-            <span>ShopLedger</span>
+            <img src="favicon.png" alt="ShopLedger Logo" style={{ height: '40px', width: 'auto' }} />
+            <span className="hidden sm:block">ShopLedger</span>
           </div>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <Link href="/login">
@@ -126,13 +126,14 @@ export default function HomePage() {
             </div>
 
             <h1 style={{
-              fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+              fontSize: 'clamp(2.5rem, 8vw, 4.5rem)',
               fontWeight: 800,
               color: 'white',
               lineHeight: 1.1,
               marginBottom: '1.5rem',
+              letterSpacing: '-0.02em',
             }}>
-              Manage Your Shop with{' '}
+              Business Management <br />
               <span style={{
                 background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
                 WebkitBackgroundClip: 'text',
@@ -143,11 +144,12 @@ export default function HomePage() {
             </h1>
 
             <p style={{
-              fontSize: '1.25rem',
+              fontSize: 'clamp(1rem, 4vw, 1.25rem)',
               color: '#94a3b8',
               maxWidth: '600px',
               margin: '0 auto 2.5rem',
               lineHeight: 1.6,
+              padding: '0 1rem',
             }}>
               The ultimate solution for retail shops to manage inventory, sales, and staff in one place.
             </p>
@@ -332,7 +334,7 @@ export default function HomePage() {
           }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'white', fontSize: '1.5rem', fontWeight: 700 }}>
-                <Store size={28} />
+                <img src="favicon.png" alt="ShopLedger Logo" style={{ height: '40px', width: 'auto' }} />
                 <span>ShopLedger</span>
               </div>
               <p style={{ color: '#94a3b8', fontSize: '0.9375rem', lineHeight: 1.6 }}>
@@ -389,10 +391,14 @@ const DemoTabs = () => {
       {/* Tab Nav */}
       <div style={{
         display: 'flex',
-        gap: '1rem',
-        padding: '1rem 2rem',
+        gap: '0.75rem',
+        padding: '1rem',
         background: 'rgba(255, 255, 255, 0.05)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        msOverflowStyle: 'none',
+        scrollbarWidth: 'none',
       }}>
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -413,21 +419,22 @@ const DemoTabs = () => {
                 fontSize: '0.9375rem',
                 fontWeight: 500,
                 cursor: 'pointer',
-                transition: 'all 0.2s'
+                flexShrink: 0
               }}
             >
               <Icon size={18} />
-              {tab.label}
+              <span style={{ whiteSpace: 'nowrap' }}>{tab.label}</span>
             </button>
           );
         })}
       </div>
 
       {/* Tab Content */}
-      <div style={{ padding: '2rem', height: '600px', overflow: 'hidden' }}>
+      <div style={{ padding: '1rem', minHeight: '600px', height: 'auto' }}>
         <div style={{
           background: '#f8fafc',
-          height: '100%',
+          minHeight: '568px',
+          height: 'auto',
           borderRadius: '1rem',
           padding: '1.5rem',
           color: '#1e293b',
@@ -445,7 +452,7 @@ const DemoTabs = () => {
 const DashboardMockup = () => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
     <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a' }}>Dashboard Overview</h3>
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
       {[
         { label: 'Total Revenue', value: '₹2,18,968', sub: '+12.5% vs last month', color: '#6366f1' },
         { label: 'Today\'s Sales', value: '₹14,514', sub: '32 orders today', color: '#10b981' },
@@ -459,7 +466,7 @@ const DashboardMockup = () => (
         </div>
       ))}
     </div>
-    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1.5rem' }}>
       <div style={{ background: 'white', padding: '1.5rem', borderRadius: '1rem', border: '1px solid #e2e8f0', height: '300px' }}>
         <div style={{ fontWeight: 600, marginBottom: '1rem' }}>Revenue Overview</div>
         {/* Mock Chart */}
@@ -469,7 +476,7 @@ const DashboardMockup = () => (
           ))}
         </div>
       </div>
-      <div style={{ background: 'white', padding: '1.5rem', borderRadius: '1rem', border: '1px solid #e2e8f0' }}>
+      <div style={{ background: 'white', padding: '1.5rem', borderRadius: '1rem', border: '1px solid #e2e8f0', minHeight: '200px' }}>
         <div style={{ fontWeight: 600, marginBottom: '1rem' }}>Top Products</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {['Cotton T-Shirt', 'Blender', 'Smart Watch'].map((p, i) => (
@@ -490,8 +497,8 @@ const ProductsMockup = () => (
       <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a' }}>Inventory List</h3>
       <button style={{ padding: '0.5rem 1rem', background: '#6366f1', color: 'white', border: 'none', borderRadius: '0.5rem', cursor: 'pointer' }}>+ Add Product</button>
     </div>
-    <div style={{ background: 'white', borderRadius: '0.75rem', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+    <div style={{ background: 'white', borderRadius: '0.75rem', border: '1px solid #e2e8f0', overflowX: 'auto' }}>
+      <table style={{ minWidth: '600px', width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
         <thead style={{ background: '#f1f5f9' }}>
           <tr>
             <th style={{ padding: '1rem', textAlign: 'left' }}>Product</th>
@@ -533,7 +540,7 @@ const ProductsMockup = () => (
 );
 
 const BillingMockup = () => (
-  <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '1.5rem', height: '100%' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', gap: '1.5rem', height: 'auto' }}>
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div style={{ background: 'white', padding: '1rem', borderRadius: '0.75rem', border: '1px solid #e2e8f0', display: 'flex', gap: '1rem' }}>
         <input type="text" placeholder="Search product..." style={{ flex: 1, padding: '0.75rem', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }} />

@@ -37,8 +37,6 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        console.log('Verifying Email OTP:', { id: user._id, inputOtp: otp, dbOtp: user.otp });
-
         // Check OTP
         if (String(user.otp) !== String(otp)) {
             return NextResponse.json<ApiResponse>(

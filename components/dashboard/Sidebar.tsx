@@ -58,7 +58,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             >
                 <div className="sidebar-header">
                     <div className="sidebar-logo">
-                        <Store size={28} />
+
+                        <img src="/favicon.ico" alt="ShopLedger Logo" style={{ height: '40px', width: 'auto' }} />
                         <span>ShopLedger</span>
                     </div>
                     <button
