@@ -320,19 +320,53 @@ export default function HomePage() {
       <footer style={{
         padding: '4rem 2rem',
         borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-        textAlign: 'center',
+        background: 'rgba(15, 23, 42, 0.9)',
       }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', color: 'white', fontSize: '1.5rem', fontWeight: 700 }}>
-            <Store size={28} />
-            <span>ShopLedger</span>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '3rem',
+            textAlign: 'left',
+            marginBottom: '3rem'
+          }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'white', fontSize: '1.5rem', fontWeight: 700 }}>
+                <Store size={28} />
+                <span>ShopLedger</span>
+              </div>
+              <p style={{ color: '#94a3b8', fontSize: '0.9375rem', lineHeight: 1.6 }}>
+                The smarter way to manage your retail business. Real-time insights, effortless billing, and more.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <h4 style={{ color: 'white', fontWeight: 600, fontSize: '1.125rem' }}>Developer</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <p style={{ color: '#e2e8f0', fontSize: '0.9375rem', fontWeight: 500 }}>Ashiph Ali</p>
+                <a href="mailto:malikasiph786@gmail.com" style={{ color: '#94a3b8', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'color 0.2s' }} className="footer-link">
+                  <FileText size={16} />
+                  malikasiph786@gmail.com
+                </a>
+                <a href="https://www.ashiphali.in" target="_blank" rel="noopener noreferrer" style={{ color: '#6366f1', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, transition: 'transform 0.2s' }} className="footer-link">
+                  <Users size={16} />
+                  Portfolio Website
+                </a>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <h4 style={{ color: 'white', fontWeight: 600, fontSize: '1.125rem' }}>Product</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <Link href="/login" style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Login</Link>
+                <Link href="/register" style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Register</Link>
+              </div>
+            </div>
           </div>
-          <p style={{ color: '#64748b', fontSize: '0.9375rem', maxWidth: '400px', margin: '0 auto' }}>
-            The smarter way to manage your retail business. Real-time insights, effortless billing, and more.
-          </p>
-          <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '2rem' }}>
+
+          <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '2rem', textAlign: 'center' }}>
             <p style={{ color: '#475569', fontSize: '0.875rem' }}>
-              © 2026 ShopLedger. All rights reserved.
+              © 2026 ShopLedger. Built with ❤️ by Ashiph Ali. All rights reserved.
             </p>
           </div>
         </div>

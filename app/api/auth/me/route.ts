@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
         let user: AuthUser;
 
         if (tokenPayload.role === 'merchant') {
-            const merchant = await Merchant.findById(tokenPayload.id).select('-password');
+            const merchant = await Merchant.findById(tokenPayload.id).select('-password').lean();
             if (!merchant || !merchant.isActive) {
                 return NextResponse.json<ApiResponse>(
                     { success: false, error: 'User not found or inactive' },
@@ -43,10 +43,10 @@ export async function GET(request: NextRequest) {
                 pincode: merchant.pincode,
                 gstNumber: merchant.gstNumber,
                 businessType: merchant.businessType,
-                isEmailVerified: merchant.isEmailVerified,
+                isEmailVerified: !!merchant.isEmailVerified,
             };
         } else {
-            const staff = await Staff.findById(tokenPayload.id).select('-password').populate('merchantId', 'shopName');
+            const staff = await Staff.findById(tokenPayload.id).select('-password').populate('merchantId', 'shopName').lean();
             if (!staff || !staff.isActive) {
                 return NextResponse.json<ApiResponse>(
                     { success: false, error: 'User not found or inactive' },
@@ -61,9 +61,10 @@ export async function GET(request: NextRequest) {
                 email: staff.email,
                 role: 'staff',
                 staffRole: staff.role,
-                merchantId: merchantData._id.toString(),
+                merchantId: merchantData?._id?.toString() || '',
                 name: staff.name,
-                shopName: merchantData.shopName,
+                shopName: merchantData?.shopName,
+                isEmailVerified: !!staff.isEmailVerified,
             };
         }
 

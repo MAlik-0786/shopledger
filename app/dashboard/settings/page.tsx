@@ -15,7 +15,7 @@ import { Button, Input, Alert, Loader, Badge, Modal } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 
 export default function SettingsPage() {
-    const { user, fetchUser } = useAuth();
+    const { user, fetchUser, loading: authLoading } = useAuth();
     const [activeTab, setActiveTab] = useState('shop');
     const [loading, setLoading] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
@@ -156,24 +156,42 @@ export default function SettingsPage() {
     };
 
     const handleChangePassword = async () => {
+        if (!passwordData.currentPassword) {
+            setError('Current password is required');
+            return;
+        }
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-            alert('Passwords do not match');
+            setError('Passwords do not match');
             return;
         }
         if (passwordData.newPassword.length < 6) {
-            alert('Password must be at least 6 characters');
+            setError('Password must be at least 6 characters');
             return;
         }
 
         setLoading(true);
+        setError('');
         try {
-            // In a real app, this would call an API
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            setSaveSuccess(true);
-            setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-            setTimeout(() => setSaveSuccess(false), 3000);
+            const res = await fetch('/api/auth/change-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    currentPassword: passwordData.currentPassword,
+                    newPassword: passwordData.newPassword
+                }),
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                setSaveSuccess(true);
+                setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+                setTimeout(() => setSaveSuccess(false), 3000);
+            } else {
+                setError(data.error || 'Failed to update password');
+            }
         } catch (error) {
             console.error('Error changing password:', error);
+            setError('Connection error');
         } finally {
             setLoading(false);
         }
@@ -186,6 +204,14 @@ export default function SettingsPage() {
         { id: 'billing', label: 'Billing Settings', icon: Percent },
         { id: 'notifications', label: 'Notifications', icon: Bell },
     ];
+
+    if (authLoading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+                <Loader size="lg" />
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -264,10 +290,7 @@ export default function SettingsPage() {
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '0.5rem' }}>
                                                 <label className="form-label" style={{ marginBottom: 0 }}>Email</label>
                                                 {user?.isEmailVerified ? (
-                                                    <span style={{ color: 'var(--color-success)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 600 }}>
-                                                        <CheckCircle size={14} />
-                                                        Verified
-                                                    </span>
+                                                    <Badge variant="success">Verified</Badge>
                                                 ) : (
                                                     <button
                                                         type="button"
@@ -382,13 +405,40 @@ export default function SettingsPage() {
                                         value={profileData.ownerName}
                                         onChange={(e) => setProfileData({ ...profileData, ownerName: e.target.value })}
                                     />
-                                    <Input
-                                        label="Email"
-                                        type="email"
-                                        value={profileData.email}
-                                        disabled
-                                        helperText="Email cannot be changed"
-                                    />
+                                    <div className="form-group">
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '0.5rem' }}>
+                                            <label className="form-label" style={{ marginBottom: 0 }}>Email</label>
+                                            {user?.isEmailVerified ? (
+                                                <Badge variant="success">Verified</Badge>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setIsVerifyModalOpen(true)}
+                                                    style={{
+                                                        fontSize: '0.75rem',
+                                                        color: 'var(--color-primary-600)',
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        fontWeight: 600,
+                                                        padding: 0
+                                                    }}
+                                                >
+                                                    Verify Now
+                                                </button>
+                                            )}
+                                        </div>
+                                        <input
+                                            className="form-input"
+                                            type="email"
+                                            value={profileData.email}
+                                            disabled
+                                            style={{ background: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}
+                                        />
+                                        <p style={{ marginTop: '0.375rem', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
+                                            Email cannot be changed
+                                        </p>
+                                    </div>
                                 </div>
                                 <div style={{ marginTop: '2rem' }}>
                                     <Button variant="primary" leftIcon={<Save size={18} />} onClick={handleSaveShop} isLoading={loading}>
