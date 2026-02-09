@@ -4,10 +4,47 @@ import Invoice from '@/models/Invoice';
 import { getUserFromRequest } from '@/lib/auth';
 import { ApiResponse, InvoiceProfile } from '@/types';
 
-// GET single invoice
+type LeanInvoiceItem = {
+    productId: string;
+    productName: string;
+    sku: string;
+    quantity: number;
+    unitPrice: number;
+    costPrice: number;
+    totalPrice: number;
+};
+
+type LeanStaff = {
+    _id: string;
+    name: string;
+};
+
+type LeanInvoice = {
+    _id: string;
+    merchantId: string;
+    staffId?: LeanStaff;
+    invoiceNumber: string;
+    items: LeanInvoiceItem[];
+    subtotal: number;
+    taxRate: number;
+    taxAmount: number;
+    discountType: 'percentage' | 'fixed';
+    discountValue: number;
+    discountAmount: number;
+    grandTotal: number;
+    customerName?: string;
+    customerPhone?: string;
+    paymentMethod: 'cash' | 'card' | 'upi' | 'credit';
+    paymentStatus: 'paid' | 'pending' | 'partial';
+    notes?: string;
+    createdAt: Date;
+};
+
+
+
 export async function GET(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
     try {
         const user = getUserFromRequest(request);
@@ -20,12 +57,12 @@ export async function GET(
 
         await dbConnect();
 
-        const { id } = await params;
+        const { id } = params;
         const merchantId = user.role === 'merchant' ? user.id : user.merchantId;
 
-        const invoice = await Invoice.findOne({ _id: id, merchantId })
+        const invoice = (await Invoice.findOne({ _id: id, merchantId })
             .populate('staffId', 'name')
-            .lean();
+            .lean()) as LeanInvoice | null;
 
         if (!invoice) {
             return NextResponse.json<ApiResponse>(
@@ -37,18 +74,21 @@ export async function GET(
         const invoiceProfile: InvoiceProfile = {
             id: invoice._id.toString(),
             merchantId: invoice.merchantId.toString(),
-            staffId: invoice.staffId?._id?.toString(),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            staffName: (invoice.staffId as any)?.name,
             invoiceNumber: invoice.invoiceNumber,
-            items: invoice.items.map((item) => ({
+
+            staffId: invoice.staffId?._id.toString(),
+            staffName: invoice.staffId?.name,
+
+            items: invoice.items.map(item => ({
                 productId: item.productId.toString(),
                 productName: item.productName,
                 sku: item.sku,
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
+                costPrice: item.costPrice,
                 totalPrice: item.totalPrice,
             })),
+
             subtotal: invoice.subtotal,
             taxRate: invoice.taxRate,
             taxAmount: invoice.taxAmount,
@@ -64,9 +104,10 @@ export async function GET(
             createdAt: invoice.createdAt.toISOString(),
         };
 
-        return NextResponse.json<ApiResponse<InvoiceProfile>>(
-            { success: true, data: invoiceProfile }
-        );
+        return NextResponse.json<ApiResponse<InvoiceProfile>>({
+            success: true,
+            data: invoiceProfile,
+        });
     } catch (error) {
         console.error('Get invoice error:', error);
         return NextResponse.json<ApiResponse>(
