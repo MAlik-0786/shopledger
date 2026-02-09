@@ -57,6 +57,7 @@ export async function PUT(
             color: category.color,
             isActive: category.isActive,
             createdAt: category.createdAt.toISOString(),
+            productCount: category.productCount ?? 0,
         };
 
         return NextResponse.json<ApiResponse<CategoryProfile>>(
