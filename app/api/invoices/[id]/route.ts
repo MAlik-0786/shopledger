@@ -44,9 +44,11 @@ type LeanInvoice = {
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await context.params; // ✅ REQUIRED in Next 15
+
         const user = getUserFromRequest(request);
         if (!user) {
             return NextResponse.json<ApiResponse>(
@@ -57,7 +59,6 @@ export async function GET(
 
         await dbConnect();
 
-        const { id } = params;
         const merchantId =
             user.role === 'merchant' ? user.id : user.merchantId;
 
