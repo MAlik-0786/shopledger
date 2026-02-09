@@ -5,7 +5,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { ApiResponse, InvoiceProfile } from '@/types';
 
 type LeanInvoiceItem = {
-    productId: string;
+    productId: { toString(): string }; // ✅ FIX
     productName: string;
     sku: string;
     quantity: number;
@@ -15,13 +15,13 @@ type LeanInvoiceItem = {
 };
 
 type LeanStaff = {
-    _id: string;
+    _id: { toString(): string }; // ✅ FIX
     name: string;
 };
 
 type LeanInvoice = {
-    _id: string;
-    merchantId: string;
+    _id: { toString(): string };          // ✅ FIX
+    merchantId: { toString(): string };   // ✅ FIX
     staffId?: LeanStaff;
     invoiceNumber: string;
     items: LeanInvoiceItem[];
