@@ -4,8 +4,11 @@ import Invoice from '@/models/Invoice';
 import { getUserFromRequest } from '@/lib/auth';
 import { ApiResponse, InvoiceProfile } from '@/types';
 
+
+type ObjectIdLike = { toString(): string };
+
 type LeanInvoiceItem = {
-    productId: { toString(): string }; // ✅ FIX
+    productId: ObjectIdLike;
     productName: string;
     sku: string;
     quantity: number;
@@ -15,13 +18,13 @@ type LeanInvoiceItem = {
 };
 
 type LeanStaff = {
-    _id: { toString(): string }; // ✅ FIX
+    _id: ObjectIdLike;
     name: string;
 };
 
 type LeanInvoice = {
-    _id: { toString(): string };          // ✅ FIX
-    merchantId: { toString(): string };   // ✅ FIX
+    _id: ObjectIdLike;
+    merchantId: ObjectIdLike;
     staffId?: LeanStaff;
     invoiceNumber: string;
     items: LeanInvoiceItem[];
@@ -41,10 +44,9 @@ type LeanInvoice = {
 };
 
 
-
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: { id: string } } // ✅ MUST be this
 ) {
     try {
         const user = getUserFromRequest(request);
@@ -57,7 +59,7 @@ export async function GET(
 
         await dbConnect();
 
-        const { id } = params;
+        const { id } = context.params; // ✅ NO await
         const merchantId = user.role === 'merchant' ? user.id : user.merchantId;
 
         const invoice = (await Invoice.findOne({ _id: id, merchantId })
