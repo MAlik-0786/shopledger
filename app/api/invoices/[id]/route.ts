@@ -4,7 +4,6 @@ import Invoice from '@/models/Invoice';
 import { getUserFromRequest } from '@/lib/auth';
 import { ApiResponse, InvoiceProfile } from '@/types';
 
-
 type ObjectIdLike = { toString(): string };
 
 type LeanInvoiceItem = {
@@ -43,10 +42,9 @@ type LeanInvoice = {
     createdAt: Date;
 };
 
-
 export async function GET(
     request: NextRequest,
-    context: { params: { id: string } } // ✅ MUST be this
+    { params }: { params: { id: string } }
 ) {
     try {
         const user = getUserFromRequest(request);
@@ -59,8 +57,9 @@ export async function GET(
 
         await dbConnect();
 
-        const { id } = context.params; // ✅ NO await
-        const merchantId = user.role === 'merchant' ? user.id : user.merchantId;
+        const { id } = params;
+        const merchantId =
+            user.role === 'merchant' ? user.id : user.merchantId;
 
         const invoice = (await Invoice.findOne({ _id: id, merchantId })
             .populate('staffId', 'name')
