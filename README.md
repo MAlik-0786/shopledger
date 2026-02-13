@@ -72,7 +72,7 @@ npm install
 
 3. Create a `.env.local` file based on `.env.example`:
 ```env
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/stockflow?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv:/......
 JWT_SECRET=your-super-secret-jwt-key-change-in-production
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
